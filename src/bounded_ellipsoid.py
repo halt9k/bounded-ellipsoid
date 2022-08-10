@@ -43,7 +43,7 @@ def find_foci(arr_pts):
         minor_max = max(minor_max, rej_len)        
         _pts_search_animations += [[pt_cur, np.copy(vec_major)]]
 
-    # if both very close, may happen
+    # if both very close, i.e. cloud is sphere, may happen
     if major_max < minor_max:
         major_max, minor_max = minor_max, major_max
 
