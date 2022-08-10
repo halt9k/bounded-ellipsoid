@@ -33,7 +33,6 @@ def find_foci(arr_pts):
     # when max calcs are started after delay when axis is less random
     for pt_cur in pts:
         vec_cur = pt_cur - pt_average
-        unprojected_len = np.linalg.norm(vec_cur)
         proj_len, rej_len = proj_length(vec_cur, vec_major)
 
         if proj_len < 0:
