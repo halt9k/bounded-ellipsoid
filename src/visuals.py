@@ -28,10 +28,10 @@ class PointsDrawer:
         self._pts_animations = _pts_animations
 
 
-    def draw_pt(self, pt, acolor, alabel, asize = 5):        
+    def draw_point(self, pt, acolor, alabel, asize = 5):        
         return self.ax3D.scatter(pt[0], pt[1], pt[2], s=asize, c=acolor, marker="o", label=alabel)
 
-    def draw_plane_el(self, axis1, axis2, a, b, foci_len, vec_untransformed, transform_mtr, vec_translate):
+    def draw_el_curve(self, axis1, axis2, a, b, foci_len, transform_mtr, vec_translate):
         # ax3 = avg
         vec_zero = np.array([0,0,0]).astype(np.float64)
         t = np.linspace(0, 2*np.pi, 100)
@@ -49,6 +49,7 @@ class PointsDrawer:
 
         plt.plot(vec[0], vec[1], vec[2])
 
+    # rotates from [1,0,0] to vec_to
     def mtr_rotation_from_x(self, vec_to):
         un_z = np.array([0,0,1])
 
@@ -61,7 +62,7 @@ class PointsDrawer:
         transform_mtr = np.array([mtr_ex, mtr_ey, mtr_ez])
         return transform_mtr.T
 
-    def draw_el2(self):
+    def draw_ellipsoid_bounds(self):
         f1, f2, stg, avg = self.pt_foci_1, self.pt_foci_2, self.stg, self.pt_average
         # for tests
         # stg = (2*2*3 + 1)**0.5
@@ -71,31 +72,30 @@ class PointsDrawer:
         voc_foci = f2 - f1
         voc_foci_len = np.linalg.norm(voc_foci)
         
-        a = stg / 2                       # Semimajor axis
-        b = np.sqrt(stg**2 - voc_foci_len**2)/2          # Semiminor axis        
-                
-        vec_untransformed = np.array([1,0,0])
+        a = stg / 2                              # Semimajor axis
+        b = np.sqrt(stg**2 - voc_foci_len**2)/2  # Semiminor axis        
+                        
         transform_mtr = self.mtr_rotation_from_x(voc_foci)
 
-        self.draw_plane_el(0, 1, a, b, voc_foci_len, vec_untransformed, transform_mtr, f1)
-        self.draw_plane_el(1, 2, b, b, voc_foci_len, vec_untransformed, transform_mtr, f1)
-        self.draw_plane_el(0, 2, a, b, voc_foci_len, vec_untransformed, transform_mtr, f1)
+        self.draw_el_curve(0, 1, a, b, voc_foci_len, transform_mtr, f1)        
+        self.draw_el_curve(0, 2, a, b, voc_foci_len, transform_mtr, f1)
+        self.draw_el_curve(1, 2, b, b, voc_foci_len, transform_mtr, f1)
 
 
-    def plot3D(self):
+    def plot_static_objects(self):
         ax3D = self.ax3D
         ax3D.clear()
 
         data = self.pts_cloud.transpose()    
         ax3D.scatter(data[0], data[1], data[2], s=5, c='black', marker="s", label='cloud')
    
-        self.draw_pt(self.pt_foci_1, 'b', 'f1', 40)
-        self.draw_pt(self.pt_foci_2, 'b', 'f2', 40)
-        self.draw_pt(self.pt_average, 'b', 'avg')
-        self.draw_el2()
+        self.draw_point(self.pt_foci_1, 'b', 'f1', 40)
+        self.draw_point(self.pt_foci_2, 'b', 'f2', 40)
+        self.draw_point(self.pt_average, 'b', 'avg')
+        self.draw_ellipsoid_bounds()
 
 
-    def plot3D_update(self, i):
+    def plot_animations(self, i):
         avg = self.pt_average
 
         if self.prev_pt_highlights is not None:
@@ -104,7 +104,7 @@ class PointsDrawer:
             self.prev_quivers.remove()
 
         cur_pt = self._pts_animations[i][0]
-        self.prev_pt_highlights = self.draw_pt(cur_pt, 'r', 'cur_pt', 30)
+        self.prev_pt_highlights = self.draw_point(cur_pt, 'r', 'cur_pt', 30)
 
         cur_foc = self._pts_animations[i][1]
         self.prev_quivers = self.ax3D.quiver(avg[0], avg[1], avg[2], cur_foc[0], cur_foc[1], cur_foc[2])    
@@ -112,9 +112,9 @@ class PointsDrawer:
     def draw(self):
         self.fig, self.ax3D = plt.subplots(subplot_kw=dict(projection="3d"))
 
-        self.plot3D()
+        self.plot_static_objects()
         def update(i):
-            self.plot3D_update(i)
+            self.plot_animations(i)
 
         len_pts = len(self.pts_cloud)
         ani = FuncAnimation(self.fig, update, frames=len_pts, interval=10/len_pts)

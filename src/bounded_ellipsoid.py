@@ -33,7 +33,6 @@ def find_foci(arr_pts):
     # when max calcs are started after delay when axis is less random
     for pt_cur in pts:
         vec_cur = pt_cur - pt_average
-        unprojected_len = np.linalg.norm(vec_cur)
         proj_len, rej_len = proj_length(vec_cur, vec_major)
 
         if proj_len < 0:
@@ -44,7 +43,7 @@ def find_foci(arr_pts):
         minor_max = max(minor_max, rej_len)        
         _pts_search_animations += [[pt_cur, np.copy(vec_major)]]
 
-    # if both very close, may happen
+    # if both very close, i.e. cloud is sphere, may happen
     if major_max < minor_max:
         major_max, minor_max = minor_max, major_max
 
