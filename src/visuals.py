@@ -31,23 +31,55 @@ class PointsDrawer:
     def draw_pt(self, pt, acolor, alabel, asize = 5):        
         return self.ax3D.scatter(pt[0], pt[1], pt[2], s=asize, c=acolor, marker="o", label=alabel)
 
-    def draw_el(self):
+    def draw_plane_el(self, axis1, axis2, a, b, foci_len, vec_untransformed, transform_mtr, vec_translate):
+        # ax3 = avg
+        vec_zero = np.array([0,0,0]).astype(np.float64)
+        t = np.linspace(0, 2*np.pi, 100)
+        vec = np.transpose([vec_zero] * len(t))
+
+        # idea - calculating for xz plane and then 
+        # applying rotation transfrom matrix based on where x axis will go
+        phi = 0
+        vec[axis1] += a * np.cos(t) * np.cos(phi) - b * np.sin(t) * np.sin(phi)
+        vec[axis2] += a * np.cos(t) * np.sin(phi) + b * np.sin(t) * np.cos(phi)
+            
+        vec = np.add(np.array([[foci_len / 2],[0],[0]]), vec)
+        vec = np.dot(transform_mtr, vec)
+        vec = np.add(vec_translate.reshape(3,1), vec)        
+
+        plt.plot(vec[0], vec[1], vec[2])
+
+    def mtr_rotation_from_x(self, vec_to):
+        un_z = np.array([0,0,1])
+
+        mtr_ex = vec_to / np.linalg.norm(vec_to)
+        mtr_y = np.cross(un_z, vec_to)
+        mtr_ey = mtr_y / np.linalg.norm(mtr_y)
+        mtr_z = np.cross(mtr_ex, mtr_ey)
+        mtr_ez = mtr_z / np.linalg.norm(mtr_z)
+                
+        transform_mtr = np.array([mtr_ex, mtr_ey, mtr_ez])
+        return transform_mtr.T
+
+    def draw_el2(self):
         f1, f2, stg, avg = self.pt_foci_1, self.pt_foci_2, self.stg, self.pt_average
+        # for tests
+        # stg = (2*2*3 + 1)**0.5
+        # f2 = np.array([2,2,2])
+        # f1 = np.array([0,0,0])
+
+        voc_foci = f2 - f1
+        voc_foci_len = np.linalg.norm(voc_foci)
         
         a = stg / 2                       # Semimajor axis
-        f = np.linalg.norm((f1 - f2) / 2)
-        b = np.sqrt(a**2 - f**2)          # Semiminor axis
-        t = np.linspace(0, 2*np.pi, 100)
+        b = np.sqrt(stg**2 - voc_foci_len**2)/2          # Semiminor axis        
+                
+        vec_untransformed = np.array([1,0,0])
+        transform_mtr = self.mtr_rotation_from_x(voc_foci)
 
-        def draw_plane_el(ax1, ax2):
-            vec = np.transpose([avg] * len(t))
-            phi = np.arctan2((f2[ax2] - f1[ax2]), (f2[ax1] - f1[ax1]))
-            vec[ax1] += a * np.cos(t) * np.cos(phi) - b * np.sin(t) * np.sin(phi)
-            vec[ax2] += a * np.cos(t) * np.sin(phi) + b * np.sin(t) * np.cos(phi)
-            plt.plot(vec[0], vec[1], vec[2])
-        draw_plane_el(0, 1)
-        draw_plane_el(1, 2)
-        draw_plane_el(0, 2)
+        self.draw_plane_el(0, 1, a, b, voc_foci_len, vec_untransformed, transform_mtr, f1)
+        self.draw_plane_el(1, 2, b, b, voc_foci_len, vec_untransformed, transform_mtr, f1)
+        self.draw_plane_el(0, 2, a, b, voc_foci_len, vec_untransformed, transform_mtr, f1)
 
 
     def plot3D(self):
@@ -57,11 +89,10 @@ class PointsDrawer:
         data = self.pts_cloud.transpose()    
         ax3D.scatter(data[0], data[1], data[2], s=5, c='black', marker="s", label='cloud')
    
-        self.draw_pt(self.pt_foci_1, 'b', 'f1', 30)
-        self.draw_pt(self.pt_foci_2, 'b', 'f2', 30)
+        self.draw_pt(self.pt_foci_1, 'b', 'f1', 40)
+        self.draw_pt(self.pt_foci_2, 'b', 'f2', 40)
         self.draw_pt(self.pt_average, 'b', 'avg')
-        self.draw_el()
-
+        self.draw_el2()
 
 
     def plot3D_update(self, i):

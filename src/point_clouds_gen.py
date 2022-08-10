@@ -36,7 +36,8 @@ class Sample:
     @staticmethod
     def line(npoints):
         a, b = Sample.rand_vec(10), Sample.rand_vec(10)
-        pts = a + np.transpose( np.transpose(b - a) * np.random.rand(100))
+        pts = a + np.transpose( np.transpose(b - a) * np.random.rand(npoints))
+        pts += np.random.rand(npoints, 3)
         return pts
 
     @staticmethod
