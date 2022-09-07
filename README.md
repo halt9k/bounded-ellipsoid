@@ -1,4 +1,4 @@
-# Bounded_ellipsoid
+# Bounded ellipsoid
 This is sandbox setup for random search alg of bounded ellipsoid
 
 It has animation steps (if required for any reason) and will produce as output this type of plots:
