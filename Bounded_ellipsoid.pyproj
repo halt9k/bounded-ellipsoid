@@ -13,7 +13,7 @@
     <Name>Bounded_ellipsoid</Name>
     <RootNamespace>PyRecallTemp</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>Global|ContinuumAnalytics|Anaconda39-64</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|temp</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,7 +34,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda39-64" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|temp" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="desc\" />
