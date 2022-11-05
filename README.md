@@ -7,4 +7,4 @@ It additionally has visualization animation steps if they required for any reaso
 
 Will produce as output this type of plots:
 
-![Output examples:](https://github.com/halt9k/Bounded_ellipsoid/blob/master/desc/Desc.png?raw=true)
+![Output examples:](https://raw.githubusercontent.com/halt9k/bounded-ellipsoid/main/desc/Desc.png)
