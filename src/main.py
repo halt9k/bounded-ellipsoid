@@ -1,6 +1,6 @@
 import numpy as np
 
-from bounded_ellipsoid import find_ellipsoid
+from bounded_ellipsoid_alg import find_ellipsoid
 from point_clouds_gen import Sample
 from visuals import PointsDrawer
 
