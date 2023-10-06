@@ -4,7 +4,8 @@ on:
     push:
     workflow_dispatch:
     schedule:
-        - cron: "0 4 * * *" # run once a day at 4 AM
+        # run every month
+        - cron: "0 0 1 * *"
 jobs:
     scan-reuse:
         uses: halt9k/shared-workflows/.github/workflows/scan_gl.yml@main
